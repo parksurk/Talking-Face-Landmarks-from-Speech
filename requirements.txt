@@ -1,0 +1,8 @@
+tensorflow==1.9.0
+keras==2.2.4
+librosa==0.6.0
+opencv-python==3.3.0.10
+dlib==19.7.0
+jupyter
+ipykernel
+tqdm
