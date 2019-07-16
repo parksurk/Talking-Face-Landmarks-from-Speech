@@ -50,26 +50,26 @@ class faceNormalizer(object):
     def similarityTransform(self, inPoints, outPoints):
         s60 = math.sin(60*math.pi/180)
         c60 = math.cos(60*math.pi/180)
-      
+
         inPts = np.copy(inPoints).tolist()
         outPts = np.copy(outPoints).tolist()
-        
+
         xin = c60*(inPts[0][0] - inPts[1][0]) - s60*(inPts[0][1] - inPts[1][1]) + inPts[1][0]
         yin = s60*(inPts[0][0] - inPts[1][0]) + c60*(inPts[0][1] - inPts[1][1]) + inPts[1][1]
-        
+
         inPts.append([np.int(xin), np.int(yin)])
-        
+
         xout = c60*(outPts[0][0] - outPts[1][0]) - s60*(outPts[0][1] - outPts[1][1]) + outPts[1][0]
         yout = s60*(outPts[0][0] - outPts[1][0]) + c60*(outPts[0][1] - outPts[1][1]) + outPts[1][1]
-        
+
         outPts.append([np.int(xout), np.int(yout)])
-        
+
         tform = cv2.estimateRigidTransform(np.array([inPts]), np.array([outPts]), False)
-        
+
         return tform
 
     def tformFlmarks(self, flmark, tform):
-        transformed = np.reshape(np.array(flmark), (68, 1, 2))           
+        transformed = np.reshape(np.array(flmark), (68, 1, 2))
         transformed = cv2.transform(transformed, tform)
         transformed = np.float32(np.reshape(transformed, (68, 2)))
         return transformed
@@ -80,7 +80,7 @@ class faceNormalizer(object):
 
         alignedSeq = copy.deepcopy(lmarkSeq)
         firstFlmark = alignedSeq[0,:,:]
-        
+
         eyecornerDst = [ (np.float(0.3 * w ), np.float(h / 3)), (np.float(0.7 * w ), np.float(h / 3)) ]
         eyecornerSrc  = [ (firstFlmark[36, 0], firstFlmark[36, 1]), (firstFlmark[45, 0], firstFlmark[45, 1]) ]
 
@@ -96,9 +96,9 @@ class faceNormalizer(object):
         h = self.h
 
         alignedSeq = copy.deepcopy(lmarkSeq)
-        
+
         eyecornerDst = [ (np.float(0.3 * w ), np.float(h / 3)), (np.float(0.7 * w ), np.float(h / 3)) ]
-    
+
         for i, lmark in enumerate(alignedSeq):
             curLmark = alignedSeq[i,:,:]
             eyecornerSrc  = [ (curLmark[36, 0], curLmark[36, 1]), (curLmark[45, 0], curLmark[45, 1]) ]
@@ -116,7 +116,7 @@ class faceNormalizer(object):
 
         sx = np.sign(tformMS[0,0])*np.sqrt(tformMS[0,0]**2 + tformMS[0,1]**2)
         sy = np.sign(tformMS[1,0])*np.sqrt(tformMS[1,0]**2 + tformMS[1,1]**2)
-        print sx, sy
+        print (sx, sy)
         prevLmark = copy.deepcopy(firstFlmark)
         prevExpTransFlmark = copy.deepcopy(meanShape)
 
@@ -143,11 +143,11 @@ def write_video_wpts_wsound_unnorm(frames, sound, fs, path, fname, xLim, yLim):
         os.remove(os.path.join(path, fname+'.wav'))
         os.remove(os.path.join(path, fname+'_ws.mp4'))
     except:
-        print 'Exp'
+        print ('Exp')
 
     if len(frames.shape) < 3:
         frames = np.reshape(frames, (frames.shape[0], frames.shape[1]/2, 2))
-    print frames.shape
+    print (frames.shape)
 
     FFMpegWriter = manimation.writers['ffmpeg']
     metadata = dict(title='Movie Test', artist='Matplotlib',
@@ -176,7 +176,7 @@ def write_video_wpts_wsound_unnorm(frames, sound, fs, path, fname, xLim, yLim):
             writer.grab_frame()
 
     cmd = 'ffmpeg -i '+os.path.join(path, fname)+'.mp4 -i '+os.path.join(path, fname)+'.wav -c:v copy -c:a aac -strict experimental '+os.path.join(path, fname)+'_ws.mp4'
-    subprocess.call(cmd, shell=True) 
+    subprocess.call(cmd, shell=True)
     print('Muxing Done')
 
     os.remove(os.path.join(path, fname+'.mp4'))
@@ -188,11 +188,11 @@ def write_video_wpts_wsound(frames, sound, fs, path, fname, xLim, yLim):
         os.remove(os.path.join(path, fname+'.wav'))
         os.remove(os.path.join(path, fname+'_ws.mp4'))
     except:
-        print 'Exp'
+        print ('Exp')
 
     if len(frames.shape) < 3:
         frames = np.reshape(frames, (frames.shape[0], frames.shape[1]/2, 2))
-    print frames.shape
+    print (frames.shape)
 
     FFMpegWriter = manimation.writers['ffmpeg']
     metadata = dict(title='Movie Test', artist='Matplotlib',
@@ -209,10 +209,10 @@ def write_video_wpts_wsound(frames, sound, fs, path, fname, xLim, yLim):
     librosa.output.write_wav(os.path.join(path, fname+'.wav'), sound, fs)
 
     rect = (0, 0, 600, 600)
-    
+
     if frames.shape[1] == 20:
         lookup = [[x[0] - 48, x[1] - 48] for x in Mouth]
-        print lookup
+        print (lookup)
     else:
         lookup = faceLmarkLookup
 
@@ -229,7 +229,7 @@ def write_video_wpts_wsound(frames, sound, fs, path, fname, xLim, yLim):
             writer.grab_frame()
 
     cmd = 'ffmpeg -y -i '+os.path.join(path, fname)+'.mp4 -i '+os.path.join(path, fname)+'.wav -c:v copy -c:a aac -strict experimental '+os.path.join(path, fname)+'_ws.mp4'
-    subprocess.call(cmd, shell=True) 
+    subprocess.call(cmd, shell=True)
     print('Muxing Done')
 
     os.remove(os.path.join(path, fname+'.mp4'))
@@ -239,11 +239,11 @@ def write_video_wpts_wsound(frames, sound, fs, path, fname, xLim, yLim):
 def plot_flmarks(pts, lab, xLim, yLim, xLab, yLab, figsize=(10, 10)):
     if len(pts.shape) != 3:
         pts = np.reshape(pts, (pts.shape[0]/2, 2))
-    print pts.shape
+    print (pts.shape)
 
     if pts.shape[0] == 20:
         lookup = [[x[0] - 48, x[1] - 48] for x in Mouth]
-        print lookup
+        print (lookup)
     else:
         lookup = faceLmarkLookup
 
@@ -254,12 +254,12 @@ def plot_flmarks(pts, lab, xLim, yLim, xLab, yLab, figsize=(10, 10)):
 
     plt.xlabel(xLab, fontsize = font['size'] + 4, fontweight='bold')
     plt.gca().xaxis.tick_top()
-    plt.gca().xaxis.set_label_position('top') 
+    plt.gca().xaxis.set_label_position('top')
     plt.ylabel(yLab, fontsize = font['size'] + 4, fontweight='bold')
     plt.xlim(xLim)
     plt.ylim(yLim)
     plt.gca().invert_yaxis()
-   
+
     plt.savefig(lab, dpi = 300, bbox_inches='tight')
     plt.clf()
     plt.close()
@@ -271,7 +271,7 @@ def melSpectra(y, sr, wsize, hsize):
                                   hop_length = int(sr*hsize),
                                   n_fft=int(sr*wsize)))/cnst
 
-    melspec = np.log(1e-16+librosa.feature.melspectrogram(sr=sr, 
+    melspec = np.log(1e-16+librosa.feature.melspectrogram(sr=sr,
                                              S=y_stft_abs**2,
                                              n_mels=64))
     return melspec
